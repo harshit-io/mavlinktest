@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "react": "19.0.0",
-    "react-native": "0.78.1"
+    "react-native": "0.78.1",
+    "lib-mavlink-connect":"git+https://github.com/BotLabDynamics/rn-lib-mavlink-connect.git#connectionMode"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
