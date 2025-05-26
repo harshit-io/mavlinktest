@@ -1,6 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.usb.host" />
+    <uses-permission android:name="android.hardware.usb.host" />
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
+    <uses-permission android:name="android.permission.ACCESS_USB" />
+
+
 
     <application
       android:name=".MainApplication"
@@ -21,6 +27,10 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        <intent-filter>
+    <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+</intent-filter>
+
       </activity>
     </application>
 </manifest>
