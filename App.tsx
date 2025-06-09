@@ -9,18 +9,7 @@ import {
   Alert,
 } from 'react-native';
 
-import {
-  initSerialConnection,
-  stopSerialConnection,
-  sendTextCommand,
-  sendMavlinkMessage,
-  getSerialInfo,
-  onSerialDataReceived,
-  removeSerialDataListener,
-  stringToByteArray,
-  safeSerialOperation,
-  cleanup,
-} from 'lib-mavlink-connect';
+import { connectionManager } from 'lib-mavlink-connect';
 
 export default function App() {
   const [serialLog, setSerialLog] = useState<string[]>([]);
@@ -33,11 +22,11 @@ export default function App() {
 
   useEffect(() => {
     // Listen for serial data events
-    serialDataListener.current = onSerialDataReceived(handleSerialDataReceived);
+    serialDataListener.current = connectionManager.onSerialDataReceived(handleSerialDataReceived);
     
     return () => {
-      cleanup().then(() => log('Cleanup complete.'));
-      removeSerialDataListener();
+      connectionManager.cleanup().then(() => log('Cleanup complete.'));
+      connectionManager.removeSerialDataListener();
       serialDataListener.current?.remove?.();
     };
   }, []);
@@ -51,7 +40,7 @@ export default function App() {
 
   const checkSerialConnection = async () => {
     try {
-      const serialDetails = await getSerialInfo();
+      const serialDetails = await connectionManager.getSerialInfo();
       const connected = serialDetails.initialized && serialDetails.status === 'connected';
       setIsConnected(connected);
       return connected;
@@ -65,7 +54,7 @@ export default function App() {
     if (isConnected) {
       // Disconnect
       setIsConnecting(true);
-      const result = await stopSerialConnection();
+      const result = await connectionManager.stopSerialConnection();
       
       if (result.success) {
         setIsConnected(false);
@@ -79,7 +68,7 @@ export default function App() {
       setIsConnecting(true);
       log('Connecting to serial device...');
       
-      const result = await initSerialConnection();
+      const result = await connectionManager.initSerialConnection();
       
       if (result.success) {
         // Wait a moment then check actual connection status
@@ -124,11 +113,13 @@ export default function App() {
       Alert.alert('Error', 'Device not connected');
       return;
     }
-
-    const result = await safeSerialOperation(
-      () => sendTextCommand(message),
+    const result = await connectionManager.safeSerialOperation(
+      
+      () => connectionManager.sendTextCommand(message),
       'sendMessage'
     );
+    console.log(`Result message: "${message}"`);
+    console.log(`Result : "${result}"`);
 
     if (result.success) {
       log(`Sent: "${message}"`);
@@ -149,8 +140,8 @@ export default function App() {
       0xFE, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     ];
     
-    const result = await safeSerialOperation(
-      () => sendMavlinkMessage(heartbeatBytes),
+    const result = await connectionManager.safeSerialOperation(
+      () => connectionManager.sendMavlinkMessage(heartbeatBytes),
       'sendHeartbeat'
     );
 
