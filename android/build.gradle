@@ -8,6 +8,15 @@ buildscript {
         kotlinVersion = "2.0.21"
     }
     repositories {
+        // GitHub Packages should be FIRST
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/BotLabDynamics/mavlink-connect-sdk")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
         google()
         mavenCentral()
     }
@@ -19,3 +28,20 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+allprojects {
+    repositories {
+        // GitHub Packages should be FIRST
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/BotLabDynamics/mavlink-connect-sdk")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+        google()
+        mavenCentral()
+        maven { url 'https://www.jitpack.io' } // JitPack should be LAST
+    }
+}
