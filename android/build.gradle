@@ -42,6 +42,6 @@ allprojects {
         }
         google()
         mavenCentral()
-        maven { url 'https://www.jitpack.io' } // JitPack should be LAST
+        maven { url 'https://www.jitpack.io' }
     }
 }
